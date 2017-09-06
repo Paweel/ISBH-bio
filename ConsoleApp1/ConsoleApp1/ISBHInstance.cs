@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using static CommonDNAOperations;
 
 namespace BIO
 {
     public class ISBHInstance
     {
-        public void BuildComplDNAInterval(int length, int temperature)
+        public void BuildComplDNAInterval(int length, int temperature, Boolean keepOld = false)
         {
-            DNACode = GenerateDNA(length);
+            if (!keepOld)
+                DNACode = GenerateDNA(length);
             GenerateSpectrum(temperature);
             DNACode = GenerateComplementary();
             GenerateSpectrum(temperature, false);
             Interval();
         }
-        private char[] DNA = new char[] { 'A', 'T', 'C', 'G' };
-        private int[] intervals = new int[] {6,3,1,0};
+        
         private String DNACode_i;
         public string DNACode { get => DNACode_i; set => DNACode_i = value; }
         public SortedDictionary<string, UInt32> Spectrum { get; set; }
         public SortedDictionary<string, UInt32> SpectrumInterval { get; set; }
+        public string first = "";
 
         public string GenerateDNA(int length)
         {
@@ -42,84 +44,44 @@ namespace BIO
             return DNAToBuild.ToString();
 
         }
-        private char ComplementaryLetter(char c)
-        {
-            switch (c)
-            {
-                case 'A':
-                    return 'T';
-                case 'T':
-                    return 'A';
-                case 'G':
-                    return 'C';
-                case 'C':
-                    return 'G';
-                default:
-                    throw new InvalidOperationException();
-            }
-        }
-        private int Temperature(String code)
-        {
-            int result = 0;
-            foreach(var c in code)
-            {
-            switch (c)
-            {
-                case 'A':
-                        result += 2;
-                        break;
-                case 'T':
-                        result += 2;
-                        break;
-                case 'G':
-                        result += 4;
-                        break;
-                case 'C':
-                        result += 4;
-                        break;
-                default:
-                    throw new InvalidOperationException();
-            }
-
-            }
-            return result;
-        }
+        
         public void GenerateSpectrum(int temperature, Boolean reset = true)
         {
             int start = 0;
             if (reset)
             {
                 Spectrum = new SortedDictionary<string, UInt32>();
+                first = "";
             }
             string temp;
+
+
+            for (int i = 0; i < (DNACode_i.Length); i++)
+            {
+                temp = DNACode_i.Substring(0, i + 1);
+                if (Temperature(temp) == temperature)
+                {
+                    first = temp;
+                    break;
+                }
+            }
+
             for (int i = 0; i < (DNACode_i.Length); i++)
             {
                 temp = DNACode_i.Substring(start, i + 1 - start);
                 if (Temperature(temp) == temperature)
                 {
                     start++; 
-                    AddToSpectrum(temp);
+                    AddToSpectrum(Spectrum, temp);
                 }
                 if (Temperature(temp) > temperature)
                 {
                     start++;
                     i--;
                 }
-
             }
         }
-        private void AddToSpectrum(string s)
-        {
-            if (Spectrum.ContainsKey(s))
-            {
 
-                Spectrum[s]++;
-            }
-            else
-            {
-                Spectrum.Add(s, 1);
-            }
-        }
         private UInt32 ChangeInIntervals(UInt32 v)
         {
             UInt32 i;
@@ -152,7 +114,7 @@ namespace BIO
             }
             foreach (string s in toDelete)
             {
-                if (--SpectrumInterval[s] < 1)
+                if (--SpectrumInterval[s] < 1) //???
                 {
                     SpectrumInterval.Remove(s);
                 }
