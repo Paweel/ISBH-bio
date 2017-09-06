@@ -93,6 +93,6 @@ public class CommonDNAOperations
 				return intervals[Spectrum[s] - 1];
 			else
 				return int.MaxValue;
-		return intervals[2];
+		return intervals[intervals.Length - 1] + 1;
 	}
 }

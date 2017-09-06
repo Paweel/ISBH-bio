@@ -120,7 +120,7 @@ namespace BIO
             for(int i = shortestOligo; i <= longestOligo; i++) {
 				if (i >= DNA.Length)
 					break;
-                oligo = DNA.ToString(DNA.Length - i - 1, i); //???
+                oligo = DNA.ToString(DNA.Length - i, i);
                 int t = Temperature(oligo);
                 if (t == (higherT - 2))
                 {
@@ -155,7 +155,7 @@ namespace BIO
 			{
 				if (i >= DNA.Length)
 					break;
-				oligo = DNA.ToString(DNA.Length - i - 1, i); //???
+				oligo = DNA.ToString(DNA.Length - i, i);
 				int t = Temperature(oligo);
 				if (t == (higherT - 2))
 				{
@@ -179,6 +179,7 @@ namespace BIO
         {
             foreach(var c in nucleo)
 			{
+				//minOligo count two complementary chains so we need to multiply
 				if (minOligoToAddS + 2 * DNA.Length > 2 * givenDNALength)
 					return false;
 				if (minOligoToAddL + 2 * DNA.Length > 2 * givenDNALength)
@@ -191,35 +192,18 @@ namespace BIO
                     DNA.Remove(DNA.Length - 1, 1);
                     continue;
                 }
-				
 				//check end condition
 				if (DNA.Length == givenDNALength)
 				{
 					bagOfResults.Add(DNA.ToString());
+					RemoveOligo(DNA);
 					DNA.Remove(DNA.Length - 1, 1);
 					return true;
 				}
-				//TODO revert opertions
-				if (DNA.Length > givenDNALength)
-				{
-					RemoveOligo(DNA);
-					DNA.Remove(DNA.Length - 1, 1);
-					continue;
-				}
-				if (!solveR(DNA))
-				{
-					//revert
-					RemoveOligo(DNA);
-					DNA.Remove(DNA.Length - 1, 1);
-					continue;
-				}
-				else
-				{
-					//success and continue
-					RemoveOligo(DNA);
-					DNA.Remove(DNA.Length - 1, 1);
-					continue;
-				}
+				solveR(DNA);
+				//revert
+				RemoveOligo(DNA);
+				DNA.Remove(DNA.Length - 1, 1);
 			}
 			
 			return false;
@@ -235,16 +219,14 @@ namespace BIO
 				Spectrum = SpectrumLong;
             else
 				Spectrum = SpectrumShort;
-                
-            if (--SpectrumCounter[oligo] <= 0)
-            {
-				if (SpectrumCounter[oligo] <= minOccurence(Spectrum, oligo))
-					addToMinOligo(1, temp);
+
+			if (SpectrumCounter[oligo] <= minOccurence(Spectrum, oligo))
+				addToMinOligo(1, temp);
+			if (--SpectrumCounter[oligo] <= 0)
+            {				
 				SpectrumCounter.Remove(oligo);
 				return false;
             }
-			if (SpectrumCounter[oligo] <= minOccurence(Spectrum, oligo))
-				addToMinOligo(1, temp);
 			return true;
         }
 

@@ -9,7 +9,7 @@ namespace ConsoleApp1
         {
             Console.WriteLine("Hello World!");
             Solver solver = new Solver();
-            solver.generate(400, 32);
+            solver.generate(20, 32);
             solver.solve();
 			solver.PrintResults();
             Console.ReadKey();
