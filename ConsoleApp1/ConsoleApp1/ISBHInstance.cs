@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using static CommonDNAOperations;
 
-namespace BIO
+namespace Solver
 {
     public class ISBHInstance
     {
@@ -82,23 +82,12 @@ namespace BIO
             }
         }
 
-        private UInt32 ChangeInIntervals(UInt32 v)
-        {
-            UInt32 i;
-            for (i = 0; i < intervals.Length; i++)
-            {
-                if (v > intervals[i])
-                    return i;
-            }
-            return i; 
-
-        }
         public void Interval()
         {
             SpectrumInterval = new SortedDictionary<string, uint>();
             foreach (var s in Spectrum)
             {
-                SpectrumInterval.Add(s.Key, ChangeInIntervals(s.Value));
+                SpectrumInterval.Add(s.Key, numToInterval(s.Value));
             }
         }
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using static CommonDNAOperations;
 
-namespace BIO
+namespace Solver
 {
-    class Solver
+    public class Solver
     {
         public string orginalDNA;
 
@@ -55,9 +55,9 @@ namespace BIO
 
 		private void setMinOligoToAdd() {
 			foreach (var oligo in SpectrumLong.Keys)
-				minOligoToAddL += minOccurence(SpectrumLong, oligo);
+				minOligoToAddL += intervalToMinOccurence(SpectrumLong, oligo);
 			foreach (var oligo in SpectrumShort.Keys)
-				minOligoToAddS += minOccurence(SpectrumShort, oligo);
+				minOligoToAddS += intervalToMinOccurence(SpectrumShort, oligo);
 		}
         public string solve()
         {
@@ -110,46 +110,9 @@ namespace BIO
             throw new InvalidOperationException();
         }
 
-        /**
-         * If false it will not add anything to SpectrumCounter
-         */
-        private Boolean addLastTwoOligo(StringBuilder DNA)
-        {
-            String oligo;
-            String shorterOligo = null;
-            for(int i = shortestOligo; i <= longestOligo; i++) {
-				if (i >= DNA.Length)
-					break;
-                oligo = DNA.ToString(DNA.Length - i, i);
-                int t = Temperature(oligo);
-                if (t == (higherT - 2))
-                {
-                    if (!incCountSpectrum(oligo, t))
-                        return false;
-                    shorterOligo = oligo;
-                }
-                else if (t == higherT)
-                {
-                    if (!incCountSpectrum(oligo, t)) {
-						if (shorterOligo != null)
-						{
-							decCountSpectrum(shorterOligo, higherT - 2);
-							decCountSpectrum(Complementary(shorterOligo), higherT - 2);
-						}
-						return false;
-                    }
-                    break;
-                }
-                else if (t > higherT)
-                {
-                    break;
-                }   
-            }
-            return true;
-        }
-
-		private void RemoveOligo(StringBuilder DNA)
+		private List<Tuple<String, int>> FindLastTwoOligos(StringBuilder DNA)
 		{
+			List<Tuple<String, int>> result = new List<Tuple<String, int>>();
 			String oligo;
 			for (int i = shortestOligo; i <= longestOligo; i++)
 			{
@@ -157,21 +120,48 @@ namespace BIO
 					break;
 				oligo = DNA.ToString(DNA.Length - i, i);
 				int t = Temperature(oligo);
-				if (t == (higherT - 2))
+				if (t == (higherT - 2) || (t == higherT))
 				{
-					decCountSpectrum(oligo, t);
-					decCountSpectrum(Complementary(oligo), t);
+					result.Add(new Tuple<string, int>(oligo, t));
 				}
-				else if (t == higherT)
-				{	
-					decCountSpectrum(oligo, higherT - 2);
-					decCountSpectrum(Complementary(oligo), higherT - 2);
+			}
+			return result;
+		}
+			
+        /**
+         * If false it will not add anything to SpectrumCounter
+         */
+        private Boolean addLastTwoOligo(StringBuilder DNA)
+        {
+			var oligos = FindLastTwoOligos(DNA);
+			Boolean error = false;
+			int i;
+			for(i = 0; i < oligos.Count; i++)
+			{
+				if (!incCountSpectrum(oligos[i].Item1, oligos[i].Item2))
+				{
+					error = true;
 					break;
 				}
-				else if (t > higherT)
+			}
+			if (error)
+			{
+				for (i = i - 1; i >= 0; i--)
 				{
-					break;
+					decCountSpectrum(oligos[i].Item1, oligos[i].Item2);
+					decCountSpectrum(Complementary(oligos[i].Item1), oligos[i].Item2);
 				}
+				return false;
+			}
+			return true;
+        }
+
+		private void RemoveOligo(StringBuilder DNA)
+		{
+			foreach(var tuple in FindLastTwoOligos(DNA))
+			{
+				decCountSpectrum(tuple.Item1, tuple.Item2);
+				decCountSpectrum(Complementary(tuple.Item1), tuple.Item2);
 			}
 		}
 
@@ -184,7 +174,8 @@ namespace BIO
 					return false;
 				if (minOligoToAddL + 2 * DNA.Length > 2 * givenDNALength)
 					return false;
-
+				if (DNA.Length < first.Length)
+					return false;
 				DNA.Append(c);
                 if (!addLastTwoOligo(DNA))
 				{
@@ -220,7 +211,7 @@ namespace BIO
             else
 				Spectrum = SpectrumShort;
 
-			if (SpectrumCounter[oligo] <= minOccurence(Spectrum, oligo))
+			if (SpectrumCounter[oligo] <= intervalToMinOccurence(Spectrum, oligo))
 				addToMinOligo(1, temp);
 			if (--SpectrumCounter[oligo] <= 0)
             {				
@@ -243,17 +234,17 @@ namespace BIO
             else
 				Spectrum = SpectrumShort;
                 
-            if ((SpectrumCounter.ContainsKey(oligo) && (SpectrumCounter[oligo]) > maxOccurence(Spectrum, oligo))) // more than allowed in interval without error!!!
+            if ((SpectrumCounter.ContainsKey(oligo) && (SpectrumCounter[oligo]) > intervalToMaxOccurence(Spectrum, oligo))) // more than allowed in interval without error!!!
                 return false;
-			if ((SpectrumCounter.ContainsKey(complOligo) && (SpectrumCounter[complOligo]) > maxOccurence(Spectrum, complOligo))) // more than allowed in interval without error! (Spectrum.ContainsKey(oligo) <- one is always allowed from negative error
+			if ((SpectrumCounter.ContainsKey(complOligo) && (SpectrumCounter[complOligo]) > intervalToMaxOccurence(Spectrum, complOligo))) // more than allowed in interval without error! (Spectrum.ContainsKey(oligo) <- one is always allowed from negative error
 				return false;
 			
 			AddToSpectrum(SpectrumCounter, oligo);
 			AddToSpectrum(SpectrumCounter, complOligo);
 
-			if (SpectrumCounter[oligo] <= minOccurence(Spectrum, oligo))
+			if (SpectrumCounter[oligo] <= intervalToMinOccurence(Spectrum, oligo))
 				addToMinOligo(-1, temp);
-			if (SpectrumCounter[complOligo] <= minOccurence(Spectrum, complOligo))
+			if (SpectrumCounter[complOligo] <= intervalToMinOccurence(Spectrum, complOligo))
 				addToMinOligo(-1, temp);
 			return true;
         }
@@ -273,7 +264,6 @@ namespace BIO
 				Console.WriteLine("");
 				Console.WriteLine(s);
 			}
-				
 		}
     }
 }

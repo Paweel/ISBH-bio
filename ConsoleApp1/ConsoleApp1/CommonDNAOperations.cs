@@ -5,7 +5,8 @@ using System.Text;
 public class CommonDNAOperations
 {
 	public static readonly char[] DNA = { 'A', 'T', 'C', 'G' };
-	public static readonly int[] intervals = { 6, 3, 0 };
+	public static readonly Tuple<int, int>[] intervals = { new Tuple<int, int>(1, 3), new Tuple<int, int>(4, 6), new Tuple<int, int>(7 , int.MaxValue) };
+
 	//That was probably bad idea ^ candidate to refactor
 	public static char ComplementaryLetter(char c)
 	{
@@ -75,10 +76,10 @@ public class CommonDNAOperations
 	/**
 	 * 
 	 */
-	public static int minOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
+	public static int intervalToMinOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
 	{
 		if (Spectrum.ContainsKey(s))
-			return intervals[Spectrum[s]] + 1;
+			return intervals[Spectrum[s]].Item1;
 		return 0;
 	}
 	
@@ -86,13 +87,26 @@ public class CommonDNAOperations
 	 * give max occurence to given oligo
 	 * ??? not sure
 	 */
-	public static int maxOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
+	public static int intervalToMaxOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
 	{
+		uint inter;
 		if (Spectrum.ContainsKey(s))
-			if (Spectrum[s] - 1 > 0)
-				return intervals[Spectrum[s] - 1];
-			else
-				return int.MaxValue;
-		return intervals[intervals.Length - 1] + 1;
+			inter = Spectrum[s];
+		else
+			return intervals[0].Item2;
+		if (inter + 1 < intervals.Length)
+			return intervals[inter + 1].Item2;
+		return intervals[intervals.Length - 1].Item2;
+		
+	}
+	public static uint numToInterval(uint num)
+	{
+		uint i;
+		for(i = 0; i < intervals.Length; i++)
+		{
+			if (!(num > intervals[i].Item2))
+				return i;
+		}
+		return i;
 	}
 }

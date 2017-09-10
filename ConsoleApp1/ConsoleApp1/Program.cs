@@ -1,14 +1,14 @@
-﻿using BIO;
+﻿using Solver;
 using System;
 
-namespace ConsoleApp1
+namespace BIO
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Solver solver = new Solver();
+			Solver.Solver solver = new Solver.Solver();
             solver.generate(20, 32);
             solver.solve();
 			solver.PrintResults();
