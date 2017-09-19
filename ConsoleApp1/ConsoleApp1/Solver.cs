@@ -43,6 +43,8 @@ namespace Solver
             first = isbh.first;
             SpectrumLong = isbh.SpectrumInterval;
             isbh.BuildComplDNAInterval(length, temp - 2, true);
+			if (first == "")
+				first = Complementary(isbh.first);
             SpectrumShort = isbh.SpectrumInterval;
 
             longestOligo = higherT / 2;
@@ -61,38 +63,54 @@ namespace Solver
 		}
         public string solve()
         {
-            StringBuilder DNA = new StringBuilder(first);
-            solveR(DNA);
-            Console.WriteLine("match: " + DNA.ToString().Equals(orginalDNA));
-            Console.WriteLine("original: " + orginalDNA);
-            return DNA.ToString();
+            StringBuilder dnaResult = new StringBuilder(first);
+			//add first to spectrum
+			addLastTwoOligo(dnaResult);
+			while(true)
+			{
+				if (dnaResult.Length < first.Length)
+					break; //failure or end of all space to search
+				if (!addLastTwoOligo(dnaResult))
+				{
+					//try luck in next
+					Revert(dnaResult);
+					continue;
+				}
+				if (LimitsBroken(dnaResult))
+				{
+					Revert(dnaResult);
+					continue;
+				}
+				if (dnaResult.Length >= givenDNALength)
+					break;
+				dnaResult.Append(nucleo[0]);
+			}
+            Console.WriteLine("match: " + dnaResult.ToString().Equals(orginalDNA));
+			Console.WriteLine("first:    " + first);
+			Console.WriteLine("original: " + orginalDNA);
+			Console.WriteLine("found:    " + dnaResult.ToString());
+			return dnaResult.ToString();
         }
-        private int Temperature(String oligo)
-        {
-            int result = 0;
-            foreach (var c in oligo)
-            {
-                switch (c)
-                {
-                    case 'A':
-                        result += 2;
-                        break;
-                    case 'T':
-                        result += 2;
-                        break;
-                    case 'G':
-                        result += 4;
-                        break;
-                    case 'C':
-                        result += 4;
-                        break;
-                    default:
-                        throw new InvalidOperationException();
-                }
 
-            }
-            return result;
-        }
+		private void Revert(StringBuilder dnaResult)
+		{
+			do
+			{
+				if (dnaResult.Length < first.Length)
+					break;
+				RemoveOligo(dnaResult);
+			}
+			while (!Next(dnaResult));
+		}
+
+		private Boolean LimitsBroken(StringBuilder dnaResult)
+		{
+			if (minOligoToAddS + 2 * dnaResult.Length > 2 * givenDNALength)
+				return true;
+			if (minOligoToAddL + 2 * dnaResult.Length > 2 * givenDNALength)
+				return true;
+			return false;
+		}
 
         private int charToTemp(char c)
         {
@@ -116,7 +134,7 @@ namespace Solver
 			String oligo;
 			for (int i = shortestOligo; i <= longestOligo; i++)
 			{
-				if (i >= DNA.Length)
+				if (i > DNA.Length)
 					break;
 				oligo = DNA.ToString(DNA.Length - i, i);
 				int t = Temperature(oligo);
@@ -127,11 +145,30 @@ namespace Solver
 			}
 			return result;
 		}
-			
-        /**
+
+		//private List<Tuple<char[], int>> FindLastTwoOligos(char[] dna)
+		//{
+		//	List<Tuple<char[], int>> result = new List<Tuple<char[], int>>();
+		//	char[] oligo;
+		//	for (int i = shortestOligo; i <= longestOligo; i++)
+		//	{
+		//		if (i >= dna.Length)
+		//			break;
+		//		int t = Temperature(dna, dna.Length - i, i);
+		//		if (t == (higherT - 2) || (t == higherT))
+		//		{
+		//			oligo = new char[i];
+		//			Array.Copy(dna, dna.Length - i, oligo, 0, i);
+		//			result.Add(new Tuple<char[], int>(oligo, t));
+		//		}
+		//	}
+		//	return result;
+		//}
+
+		/**
          * If false it will not add anything to SpectrumCounter
          */
-        private Boolean addLastTwoOligo(StringBuilder DNA)
+		private Boolean addLastTwoOligo(StringBuilder DNA)
         {
 			var oligos = FindLastTwoOligos(DNA);
 			Boolean error = false;

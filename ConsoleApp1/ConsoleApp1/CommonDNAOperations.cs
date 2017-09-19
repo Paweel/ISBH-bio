@@ -7,7 +7,6 @@ public class CommonDNAOperations
 	public static readonly char[] DNA = { 'A', 'T', 'C', 'G' };
 	public static readonly Tuple<int, int>[] intervals = { new Tuple<int, int>(1, 3), new Tuple<int, int>(4, 6), new Tuple<int, int>(7 , int.MaxValue) };
 
-	//That was probably bad idea ^ candidate to refactor
 	public static char ComplementaryLetter(char c)
 	{
 		switch (c)
@@ -24,7 +23,28 @@ public class CommonDNAOperations
 				throw new InvalidOperationException();
 		}
 	}
+	public static SortedDictionary<String, uint> GenerateSpectrum(String DNACode, int temperature)
+	{
+		SortedDictionary<String, uint> spectrum = new SortedDictionary<String, uint>();
+		int start = 0;
+		string temp;
 
+		for (int i = 0; i < (DNACode.Length); i++)
+		{
+			temp = DNACode.Substring(start, i + 1 - start);
+			if (Temperature(temp) == temperature)
+			{
+				start++;
+				AddToSpectrum(spectrum, temp);
+			}
+			if (Temperature(temp) > temperature)
+			{
+				start++;
+				i--;
+			}
+		}
+		return spectrum;
+	}
 	public static String Complementary(String s) {
 		StringBuilder result = new StringBuilder();
 		foreach (var c in s)
@@ -56,7 +76,32 @@ public class CommonDNAOperations
 				default:
 					throw new InvalidOperationException();
 			}
+		}
+		return result;
+	}
 
+	public static int Temperature(char[] s, int start, int length)
+	{
+		int result = 0;
+		for(int i = start; i < start + length; i++)
+		{
+			switch (s[i])
+			{
+				case 'A':
+					result += 2;
+					break;
+				case 'T':
+					result += 2;
+					break;
+				case 'C':
+					result += 4;
+					break;
+				case 'G':
+					result += 4;
+					break;
+				default:
+					throw new InvalidOperationException();
+			}
 		}
 		return result;
 	}
@@ -108,5 +153,25 @@ public class CommonDNAOperations
 				return i;
 		}
 		return i;
+	}
+
+	public static Boolean Next(StringBuilder s)
+	{
+		switch (s[s.Length - 1])
+		{
+			case 'A':
+				s[s.Length - 1] = 'T';
+				return true;
+			case 'T':
+				s[s.Length - 1] = 'C';
+				return true;
+			case 'C':
+				s[s.Length - 1] = 'G';
+				return true;
+			case 'G':
+				s.Length--;
+				return false;
+		}
+		throw new InvalidOperationException();
 	}
 }
