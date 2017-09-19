@@ -25,7 +25,7 @@ namespace Solver
 
         public char[] nucleo = new char[] {'A', 'T', 'C', 'G'};
 
-		private List<String> bagOfResults;
+		public List<String> bagOfResults;
         private int longestOligo;
         private int shortestOligo;
         //count oligo quantity in answer
@@ -64,7 +64,7 @@ namespace Solver
         public string solve()
         {
             StringBuilder dnaResult = new StringBuilder(first);
-			addLastTwoOligo(new StringBuilder(first.Substring(0, first.Length - 2)));
+			addLastTwoOligo(new StringBuilder(first.Substring(0, first.Length - 1)));
 			while(true)
 			{
 				if (dnaResult.Length < first.Length)
@@ -81,13 +81,16 @@ namespace Solver
 					continue;
 				}
 				if (dnaResult.Length >= givenDNALength)
-					break;
+				{
+					bagOfResults.Add(dnaResult.ToString());
+					Revert(dnaResult);
+					continue;
+				}
 				dnaResult.Append(nucleo[0]);
 			}
-            Console.WriteLine("match: " + dnaResult.ToString().Equals(orginalDNA));
+            Console.WriteLine("match: " + bagOfResults.Contains(orginalDNA));
 			Console.WriteLine("first:    " + first);
 			Console.WriteLine("original: " + orginalDNA);
-			Console.WriteLine("found:    " + dnaResult.ToString());
 			return dnaResult.ToString();
         }
 
@@ -206,9 +209,9 @@ namespace Solver
             else
 				Spectrum = SpectrumShort;
                 
-            if ((SpectrumCounter.ContainsKey(oligo) && (SpectrumCounter[oligo]) > intervalToMaxOccurence(Spectrum, oligo))) // more than allowed in interval without error!!!
+            if (SpectrumCounter.ContainsKey(oligo) && (SpectrumCounter[oligo] > intervalToMaxOccurence(Spectrum, oligo))) // more than allowed in interval without error!!!
                 result = false;
-			if ((SpectrumCounter.ContainsKey(complOligo) && (SpectrumCounter[complOligo]) > intervalToMaxOccurence(Spectrum, complOligo))) // more than allowed in interval without error! (Spectrum.ContainsKey(oligo) <- one is always allowed from negative error
+			if (SpectrumCounter.ContainsKey(complOligo) && (SpectrumCounter[complOligo] > intervalToMaxOccurence(Spectrum, complOligo))) // more than allowed in interval without error! (Spectrum.ContainsKey(oligo) <- one is always allowed from negative error
 				result = false;
 			
 			AddToSpectrum(SpectrumCounter, oligo);

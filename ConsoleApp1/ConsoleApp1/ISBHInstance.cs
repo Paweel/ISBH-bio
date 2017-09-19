@@ -11,7 +11,7 @@ namespace Solver
         {
             if (!keepOld)
                 DNACode = GenerateDNA(length);
-            GenerateSpectrum(temperature);
+			GenerateSpectrum(temperature);
             DNACode = GenerateComplementary();
             GenerateSpectrum(temperature, false);
             Interval();

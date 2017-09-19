@@ -32,8 +32,20 @@ namespace SolverTest
 			{
 				Solver.Solver solver = new Solver.Solver();
 				solver.generate(32, 26);
-				Assert.AreEqual(solver.orginalDNA, solver.solve(), "iteration: " + i.ToString() + " first: " + solver.first);
+				solver.solve();
+				Assert.IsTrue(solver.bagOfResults.Contains(solver.orginalDNA), "\n" + solver.orginalDNA + "\n" + print(solver.bagOfResults));
 			}
+		}
+
+		private string print(List<String> b)
+		{
+			StringBuilder s = new StringBuilder();
+			foreach(var v in b)
+			{
+				s.Append(v);
+				s.Append('\n');
+			}
+			return s.ToString();
 		}
 	}
 }
