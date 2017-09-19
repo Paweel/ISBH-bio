@@ -64,6 +64,7 @@ namespace Solver
         public string solve()
         {
             StringBuilder dnaResult = new StringBuilder(first);
+			addLastTwoOligo(new StringBuilder(first.Substring(0, first.Length - 2)));
 			while(true)
 			{
 				if (dnaResult.Length < first.Length)
@@ -157,19 +158,9 @@ namespace Solver
 				if (!incCountSpectrum(oligos[i].Item1, oligos[i].Item2))
 				{
 					error = true;
-					break;
 				}
 			}
-			if (error)
-			{
-				for (i = i - 1; i >= 0; i--)
-				{
-					decCountSpectrum(oligos[i].Item1, oligos[i].Item2);
-					decCountSpectrum(Complementary(oligos[i].Item1), oligos[i].Item2);
-				}
-				return false;
-			}
-			return true;
+			return !error;
         }
 
 		private void RemoveOligo(StringBuilder DNA)
@@ -203,11 +194,11 @@ namespace Solver
         }
 
         /**
-         * return false if oligo quantity exceed maximum interval + 1
-         * in this case it don't add that oligo to SpectrumCounter
+         * return false if oligo quantity exceed maximum interval
          */
         private Boolean incCountSpectrum(string oligo, int temp)
         {
+			Boolean result = true;
 			String complOligo = Complementary(oligo);
             SortedDictionary<string, UInt32> Spectrum;
             if (temp == higherT)
@@ -216,9 +207,9 @@ namespace Solver
 				Spectrum = SpectrumShort;
                 
             if ((SpectrumCounter.ContainsKey(oligo) && (SpectrumCounter[oligo]) > intervalToMaxOccurence(Spectrum, oligo))) // more than allowed in interval without error!!!
-                return false;
+                result = false;
 			if ((SpectrumCounter.ContainsKey(complOligo) && (SpectrumCounter[complOligo]) > intervalToMaxOccurence(Spectrum, complOligo))) // more than allowed in interval without error! (Spectrum.ContainsKey(oligo) <- one is always allowed from negative error
-				return false;
+				result = false;
 			
 			AddToSpectrum(SpectrumCounter, oligo);
 			AddToSpectrum(SpectrumCounter, complOligo);
@@ -227,7 +218,7 @@ namespace Solver
 				addToMinOligo(-1, temp);
 			if (SpectrumCounter[complOligo] <= intervalToMinOccurence(Spectrum, complOligo))
 				addToMinOligo(-1, temp);
-			return true;
+			return result;
         }
 
 		private void addToMinOligo(int num, int temp)
