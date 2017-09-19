@@ -9,7 +9,7 @@ namespace BIO
         {
             Console.WriteLine("Hello World!");
 			Solver.Solver solver = new Solver.Solver();
-            solver.generate(20, 32);
+            solver.generate(18, 32);
             solver.solve();
 			solver.PrintResults();
             Console.ReadKey();

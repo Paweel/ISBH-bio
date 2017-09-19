@@ -64,7 +64,7 @@ namespace Solver
         public string solve()
         {
             StringBuilder dnaResult = new StringBuilder(first);
-			addLastTwoOligo(new StringBuilder(first.Substring(0, first.Length - 2)));
+			addLastTwoOligo(new StringBuilder(first.Substring(0, first.Length - 1)));
 			while(true)
 			{
 				if (dnaResult.Length < first.Length)
