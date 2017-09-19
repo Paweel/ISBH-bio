@@ -84,7 +84,7 @@ namespace BIOTest
             i.DNACode = s1;
             i.GenerateSpectrum(10);
             i.Interval();
-            UInt32 count1 = 0, count2 = 0;
+            int count1 = 0, count2 = 0;
             foreach(var v in i.SpectrumInterval.Values)
             {
                 count1 += v; 

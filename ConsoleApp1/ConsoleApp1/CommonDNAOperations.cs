@@ -23,9 +23,9 @@ public class CommonDNAOperations
 				throw new InvalidOperationException();
 		}
 	}
-	public static SortedDictionary<String, uint> GenerateSpectrum(String DNACode, int temperature)
+	public static SortedDictionary<String, int> GenerateSpectrum(String DNACode, int temperature)
 	{
-		SortedDictionary<String, uint> spectrum = new SortedDictionary<String, uint>();
+		SortedDictionary<String, int> spectrum = new SortedDictionary<String, int>();
 		int start = 0;
 		string temp;
 
@@ -106,7 +106,7 @@ public class CommonDNAOperations
 		return result;
 	}
 
-	public static void AddToSpectrum(SortedDictionary<string, UInt32> Spectrum, string s)
+	public static void AddToSpectrum(SortedDictionary<string, int> Spectrum, string s)
 	{
 		if (Spectrum.ContainsKey(s))
 		{
@@ -121,7 +121,7 @@ public class CommonDNAOperations
 	/**
 	 * 
 	 */
-	public static int intervalToMinOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
+	public static int intervalToMinOccurence(SortedDictionary<string, int> Spectrum, string s)
 	{
 		if (Spectrum.ContainsKey(s))
 			return intervals[Spectrum[s]].Item1;
@@ -132,9 +132,9 @@ public class CommonDNAOperations
 	 * give max occurence to given oligo
 	 * ??? not sure
 	 */
-	public static int intervalToMaxOccurence(SortedDictionary<string, UInt32> Spectrum, string s)
+	public static int intervalToMaxOccurence(SortedDictionary<string, int> Spectrum, string s)
 	{
-		uint inter;
+		int inter;
 		if (Spectrum.ContainsKey(s))
 			inter = Spectrum[s];
 		else
@@ -144,9 +144,9 @@ public class CommonDNAOperations
 		return intervals[intervals.Length - 1].Item2;
 		
 	}
-	public static uint numToInterval(uint num)
+	public static int numToInterval(int num)
 	{
-		uint i;
+		int i;
 		for(i = 0; i < intervals.Length; i++)
 		{
 			if (!(num > intervals[i].Item2))

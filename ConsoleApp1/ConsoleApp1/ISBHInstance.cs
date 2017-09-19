@@ -19,8 +19,8 @@ namespace Solver
         
         private String DNACode_i;
         public string DNACode { get => DNACode_i; set => DNACode_i = value; }
-        public SortedDictionary<string, UInt32> Spectrum { get; set; }
-        public SortedDictionary<string, UInt32> SpectrumInterval { get; set; }
+        public SortedDictionary<string, int> Spectrum { get; set; }
+        public SortedDictionary<string, int> SpectrumInterval { get; set; }
         public string first = "";
 
         public string GenerateDNA(int length)
@@ -50,7 +50,7 @@ namespace Solver
             int start = 0;
             if (reset)
             {
-                Spectrum = new SortedDictionary<string, UInt32>();
+                Spectrum = new SortedDictionary<string, int>();
                 first = "";
             }
             string temp;
@@ -84,7 +84,7 @@ namespace Solver
 
         public void Interval()
         {
-            SpectrumInterval = new SortedDictionary<string, uint>();
+            SpectrumInterval = new SortedDictionary<string, int>();
             foreach (var s in Spectrum)
             {
                 SpectrumInterval.Add(s.Key, numToInterval(s.Value));

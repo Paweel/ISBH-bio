@@ -13,9 +13,9 @@ namespace Solver
         //intervals that say how many times oligo where detected
         private int[] intervals = new int[] { 6, 3, 1, 0 };
         //spectrum from higer temperature
-        public SortedDictionary<string, UInt32> SpectrumLong { get; set; }
+        public SortedDictionary<string, int> SpectrumLong { get; set; }
         //spectrum from lower temperature
-        public SortedDictionary<string, UInt32> SpectrumShort { get; set; }
+        public SortedDictionary<string, int> SpectrumShort { get; set; }
         //first oligo
         public string first;
         //higher temperature in ISBH second temp is always lower by 2
@@ -29,7 +29,7 @@ namespace Solver
         private int longestOligo;
         private int shortestOligo;
         //count oligo quantity in answer
-        public SortedDictionary<string, UInt32> SpectrumCounter { get; set; }
+        public SortedDictionary<string, int> SpectrumCounter { get; set; }
 		private int minOligoToAddS = 0;
 		private int minOligoToAddL = 0;
 		ISBHInstance isbh = new ISBHInstance();
@@ -39,10 +39,12 @@ namespace Solver
             higherT = temp;
             this.givenDNALength = length;
             isbh.BuildComplDNAInterval(length, temp);
-            orginalDNA = isbh.DNACode;
+			isbh.GenerateNegativeErrorInterval(3);
+			orginalDNA = isbh.DNACode;
             first = isbh.first;
             SpectrumLong = isbh.SpectrumInterval;
             isbh.BuildComplDNAInterval(length, temp - 2, true);
+			isbh.GenerateNegativeErrorInterval(4);
 			if (first == "")
 				first = Complementary(isbh.first);
             SpectrumShort = isbh.SpectrumInterval;
@@ -50,7 +52,7 @@ namespace Solver
             longestOligo = higherT / 2;
             shortestOligo = (higherT - 2) / 4;
 			bagOfResults = new List<string>();
-			SpectrumCounter = new SortedDictionary<string, uint>();
+			SpectrumCounter = new SortedDictionary<string, int>();
 
 			setMinOligoToAdd();
         }
@@ -180,7 +182,7 @@ namespace Solver
          */
         private Boolean decCountSpectrum(string oligo, int temp)
         {
-            SortedDictionary<string, UInt32> Spectrum;
+            SortedDictionary<string, int> Spectrum;
             if (temp == higherT)
 				Spectrum = SpectrumLong;
             else
@@ -203,7 +205,7 @@ namespace Solver
         {
 			Boolean result = true;
 			String complOligo = Complementary(oligo);
-            SortedDictionary<string, UInt32> Spectrum;
+            SortedDictionary<string, int> Spectrum;
             if (temp == higherT)
 				Spectrum = SpectrumLong;
             else

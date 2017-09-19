@@ -28,7 +28,7 @@ namespace SolverTest
 		[TestMethod]
 		public void TestSolve()
 		{
-			for(int i = 0; i < 100; i++)
+			for(int i = 0; i < 10; i++)
 			{
 				Solver.Solver solver = new Solver.Solver();
 				solver.generate(32, 26);
