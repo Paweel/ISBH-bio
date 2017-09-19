@@ -64,8 +64,6 @@ namespace Solver
         public string solve()
         {
             StringBuilder dnaResult = new StringBuilder(first);
-			//add first to spectrum
-			addLastTwoOligo(dnaResult);
 			while(true)
 			{
 				if (dnaResult.Length < first.Length)
@@ -146,25 +144,6 @@ namespace Solver
 			return result;
 		}
 
-		//private List<Tuple<char[], int>> FindLastTwoOligos(char[] dna)
-		//{
-		//	List<Tuple<char[], int>> result = new List<Tuple<char[], int>>();
-		//	char[] oligo;
-		//	for (int i = shortestOligo; i <= longestOligo; i++)
-		//	{
-		//		if (i >= dna.Length)
-		//			break;
-		//		int t = Temperature(dna, dna.Length - i, i);
-		//		if (t == (higherT - 2) || (t == higherT))
-		//		{
-		//			oligo = new char[i];
-		//			Array.Copy(dna, dna.Length - i, oligo, 0, i);
-		//			result.Add(new Tuple<char[], int>(oligo, t));
-		//		}
-		//	}
-		//	return result;
-		//}
-
 		/**
          * If false it will not add anything to SpectrumCounter
          */
@@ -201,41 +180,6 @@ namespace Solver
 				decCountSpectrum(Complementary(tuple.Item1), tuple.Item2);
 			}
 		}
-
-        private Boolean solveR(StringBuilder DNA)
-        {
-            foreach(var c in nucleo)
-			{
-				//minOligo count two complementary chains so we need to multiply
-				if (minOligoToAddS + 2 * DNA.Length > 2 * givenDNALength)
-					return false;
-				if (minOligoToAddL + 2 * DNA.Length > 2 * givenDNALength)
-					return false;
-				if (DNA.Length < first.Length)
-					return false;
-				DNA.Append(c);
-                if (!addLastTwoOligo(DNA))
-				{
-					//revert
-                    DNA.Remove(DNA.Length - 1, 1);
-                    continue;
-                }
-				//check end condition
-				if (DNA.Length == givenDNALength)
-				{
-					bagOfResults.Add(DNA.ToString());
-					RemoveOligo(DNA);
-					DNA.Remove(DNA.Length - 1, 1);
-					return true;
-				}
-				solveR(DNA);
-				//revert
-				RemoveOligo(DNA);
-				DNA.Remove(DNA.Length - 1, 1);
-			}
-			
-			return false;
-        }
 
         /**
          *  false on removing oligo from spectrum

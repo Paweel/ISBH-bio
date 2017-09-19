@@ -23,7 +23,17 @@ namespace SolverTest
 			Assert.AreEqual(24, list[0].Item2);
 			Assert.AreEqual("TGAGACTAG", list[1].Item1);
 			Assert.AreEqual(26, list[1].Item2);
+		}
 
+		[TestMethod]
+		public void TestSolve()
+		{
+			for(int i = 0; i < 100; i++)
+			{
+				Solver.Solver solver = new Solver.Solver();
+				solver.generate(32, 26);
+				Assert.AreEqual(solver.orginalDNA, solver.solve(), "iteration: " + i.ToString() + " first: " + solver.first);
+			}
 		}
 	}
 }
