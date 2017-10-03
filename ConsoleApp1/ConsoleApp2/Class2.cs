@@ -55,14 +55,16 @@ namespace metaheuristic
 
 		public void CrossOver(Double percent)
 		{
+            List<DNA> list = new List<DNA>();
 			foreach (var dna in population)
 			{
 				if (random.NextDouble() < percent)
 				{
-					population.Add(new DNA(population[random.Next(0, population.Count)]));
+                    list.Add(new DNA(population[random.Next(0, population.Count)]));
 					dna.Crossover(population[random.Next(0, population.Count)], random);
 				}
 			}
+            population.AddRange(list);
 		}
 
 		public void Contest()
