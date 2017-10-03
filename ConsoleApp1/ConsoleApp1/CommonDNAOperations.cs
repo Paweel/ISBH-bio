@@ -185,7 +185,7 @@ public class CommonDNAOperations
 
 		foreach(var num in spectrumInterval1.Values)
 		{
-			sum += Math.Abs(num);
+			sum += Math.Abs(num + 1);
 		}
 
 		return sum;
@@ -194,7 +194,12 @@ public class CommonDNAOperations
 	public static void DelOligo(SortedDictionary<String, int> spectrumInterval, string oligo, int num)
 	{
 		if (spectrumInterval.ContainsKey(oligo))
+		{
 			spectrumInterval[oligo] -= num;
+			if (spectrumInterval[oligo] == 0)
+				spectrumInterval.Remove(oligo);
+		}
+			
 		else
 			spectrumInterval.Add(oligo, -num);
 	}

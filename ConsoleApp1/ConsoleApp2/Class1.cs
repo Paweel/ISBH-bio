@@ -20,37 +20,40 @@ namespace metaheuristic
 			this.code = stringBuilder;
 		}
 
-		public void Mutate(Random random)
+		public StringBuilder Mutate(Random random, int amount = 1)
 		{
+			StringBuilder temp = new StringBuilder(code.ToString());
 			int choice = random.Next(0,2);
-			int position = random.Next(0, code.Length);
-			switch (choice)
+			for(int i = 0; i < amount; i++)
 			{
-				//delete
-				case 0:
-					code.Remove(position, 1);
-					break;
-				//add
-				case 1:
-					int nucleo = random.Next(0, 3);
-					code.Insert(position, CommonDNAOperations.DNA[nucleo]);
-					break;
-				//
-				case 2:
-					int position2 = random.Next(0, code.Length);
-					char c = code[position];
-					code[position] = code[position2];
-					code[position2] = c;
-					break;
+				int position = random.Next(0, temp.Length - 1);
+				switch (choice)
+				{
+					//delete
+					case 0:
+						temp.Remove(position, 1);
+						break;
+					//add
+					case 1:
+						int nucleo = random.Next(0, 3);
+						temp.Insert(position, CommonDNAOperations.DNA[nucleo]);
+						break;
+					//
+					case 2:
+						int position2 = random.Next(0, temp.Length);
+						char c = temp[position];
+						temp[position] = temp[position2];
+						temp[position2] = c;
+						break;
+				}
 			}
+			return temp;
 		}	
 
 		public StringBuilder Crossover(DNA DNA2, Random random)
 		{
-			StringBuilder result = new StringBuilder();
-			result.Append(DNA2.code);
-			StringBuilder temp = new StringBuilder();
-			temp.Append(code);
+			StringBuilder result = new StringBuilder(DNA2.code.ToString());
+			StringBuilder temp = new StringBuilder(code.ToString());
 
 			int dividePoint = random.Next(1, 9);
 			result.Length = (int)(result.Length * (dividePoint / 10.0));

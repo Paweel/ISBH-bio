@@ -17,14 +17,20 @@ namespace metaheuristic
 			metaheuristic.Generate(80, 32);
 			var list = metaheuristic.GenPop(50);
 
-			for(int i = 0; i < 30; i++)
+			for(int i = 0; i < 100; i++)
 			{
-				metaheuristic.Mutate(0.2);
-				metaheuristic.CrossOver(0.5);
+				metaheuristic.Mutate(0.4);
+				metaheuristic.CrossOver(0.7);
 				metaheuristic.Contest();
 				Console.WriteLine(i);
 			}
-        }
+			DNA best = metaheuristic.GetBest();
+			Console.WriteLine(metaheuristic.isbh.DNACode);
+			Console.WriteLine("");
+			Console.WriteLine(best.code.ToString());
+			Console.WriteLine(best.Evaluate(32,80, metaheuristic.SpectrumLong).ToString());
+			Console.ReadKey();
+		}
 
 	}
 }

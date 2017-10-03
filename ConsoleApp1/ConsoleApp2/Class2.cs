@@ -10,13 +10,13 @@ namespace metaheuristic
     {
 
 		private static Random random = new Random();
-		private ISBHInstance isbh = new ISBHInstance();
+		public ISBHInstance isbh = new ISBHInstance();
 		string orginalDNA;
 		string first;
 		int length;
 		int temperature;
 		List<DNA> population;
-		SortedDictionary<string, int> SpectrumLong;
+		public SortedDictionary<string, int> SpectrumLong;
 		SortedDictionary<string, int> SpectrumShort;
 		public void Generate(int length, int temp)
 		{
@@ -46,11 +46,13 @@ namespace metaheuristic
 
 		public void Mutate(Double percent)
 		{
-			foreach(var dna in population)
+			List<DNA> list = new List<DNA>();
+			foreach (var dna in population)
 			{
 				if (random.NextDouble() < percent)
-					dna.Mutate(random);
+					list.Add(new DNA(dna.Mutate(random, length/10)));
 			}
+			population.AddRange(list);
 		}
 
 		public void CrossOver(Double percent)
@@ -72,24 +74,29 @@ namespace metaheuristic
 			int[] array = new int[4];
 			List<DNA> newPop = new List<DNA>();
 			Shuffle(population);
+			if (population.Count <= 100)
+				return;
 			for(int i = 0; i < population.Count; i+=4)
 			{
 				int min = int.MaxValue;
 				int minPosition = 0;
 				for(int j = 0; j < 4; j ++)
 				{
-					if (i * 4 + j > population.Count)
+					if (i + j >= population.Count)
 						break;
-					array[j] = population[i * 4 + j].Evaluate(temperature, length, SpectrumLong);
+					array[j] = population[i + j].Evaluate(temperature, length, SpectrumLong);
 					if (array[j] < min)
 					{
 						min = array[j];
-						minPosition = i * 4 + j;
+						minPosition = i + j;
 					}
-					newPop.Add(population[minPosition]);
 				}
+				newPop.Add(population[minPosition]);
 			}
 			population = newPop;
+
+			if (population.Count >= 800)
+				Contest();
 		}
 		public static void Shuffle<T>(IList<T> list)
 		{
@@ -112,6 +119,8 @@ namespace metaheuristic
 			foreach (var s in oligos)
 			{
 				Merge(code, s);
+				if (code.Length > length * 2)
+					break;
 			}
 			DNA dna = new DNA(code);
 			return dna;
@@ -162,6 +171,23 @@ namespace metaheuristic
 			List<TKey> keys = Enumerable.ToList(dict.Keys);
 			Shuffle(keys);
 			return keys;
+		}
+
+		public DNA GetBest()
+		{
+			DNA best = null;
+			int min = int.MaxValue;
+			int temp;
+			foreach(var v in population)
+			{
+				temp = v.Evaluate(temperature, length, SpectrumLong);
+				if (temp < min)
+				{
+					best = v;
+					min = temp;
+				}
+			}
+			return best;
 		}
 	}
 }
