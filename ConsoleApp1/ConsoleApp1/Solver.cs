@@ -39,12 +39,12 @@ namespace Solver
             higherT = temp;
             this.givenDNALength = length;
             isbh.BuildComplDNAInterval(length, temp);
-			isbh.GenerateNegativeErrorInterval(3);
+			isbh.GenerateNegativeErrorInterval(13);
 			orginalDNA = isbh.DNACode;
             first = isbh.first;
             SpectrumLong = isbh.SpectrumInterval;
             isbh.BuildComplDNAInterval(length, temp - 2, true);
-			isbh.GenerateNegativeErrorInterval(4);
+			isbh.GenerateNegativeErrorInterval(13);
 			if (first == "")
 				first = Complementary(isbh.first);
             SpectrumShort = isbh.SpectrumInterval;

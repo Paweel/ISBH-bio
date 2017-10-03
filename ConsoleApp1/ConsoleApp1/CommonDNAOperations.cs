@@ -174,4 +174,56 @@ public class CommonDNAOperations
 		}
 		throw new InvalidOperationException();
 	}
+
+	public static int SpectrumDiffInPlace(SortedDictionary<String, int> spectrumInterval1, SortedDictionary<String, int> spectrumInterval2)
+	{
+		int sum = 0;
+		foreach(var pair in spectrumInterval2)
+		{
+			DelOligo(spectrumInterval1, pair.Key, pair.Value);
+		}
+
+		foreach(var num in spectrumInterval1.Values)
+		{
+			sum += Math.Abs(num);
+		}
+
+		return sum;
+	}
+
+	public static void DelOligo(SortedDictionary<String, int> spectrumInterval, string oligo, int num)
+	{
+		if (spectrumInterval.ContainsKey(oligo))
+			spectrumInterval[oligo] -= num;
+		else
+			spectrumInterval.Add(oligo, -num);
+	}
+
+	public static void AddOligo(SortedDictionary<String, int> spectrumInterval, string oligo, int num)
+	{
+		if (spectrumInterval.ContainsKey(oligo))
+			spectrumInterval[oligo] += num;
+		else
+			spectrumInterval.Add(oligo, num);
+	}
+
+	public static SortedDictionary<String, int> MergeSpectrum(SortedDictionary<String, int> interval1, SortedDictionary<String, int> interval2)
+	{
+		foreach (var pair in interval2)
+		{
+			AddOligo(interval1, pair.Key, pair.Value);
+		}
+		return interval1;
+	}
+
+	public static SortedDictionary<string, int> Interval(SortedDictionary<string, int> spectrum)
+	{
+		SortedDictionary<string, int> SpectrumInterval = new SortedDictionary<string, int>();
+		foreach (var s in spectrum)
+		{
+			SpectrumInterval.Add(s.Key, numToInterval(s.Value));
+		}
+
+		return SpectrumInterval;
+	}
 }
