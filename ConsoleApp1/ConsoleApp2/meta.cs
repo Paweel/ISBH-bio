@@ -36,10 +36,11 @@ namespace metaheuristic
 
 		public List<DNA> GenPop(int amount)
 		{
+			Generator generator = new Generator(SpectrumLong, length, first);
 			population = new List<DNA>();
 			for (int i = 0; i < amount; i++)
 			{
-				population.Add(quickGen(SpectrumLong));
+				population.Add(generator.ToDna(generator.Generate()));
 			}
 			return population;
 		}
@@ -167,7 +168,6 @@ namespace metaheuristic
 
 		public List<TKey> RandomList<TKey, TValue>(IDictionary<TKey, TValue> dict)
 		{
-			Random rand = new Random();
 			List<TKey> keys = Enumerable.ToList(dict.Keys);
 			Shuffle(keys);
 			return keys;

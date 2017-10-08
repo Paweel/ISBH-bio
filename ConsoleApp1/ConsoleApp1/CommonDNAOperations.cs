@@ -155,6 +155,15 @@ public class CommonDNAOperations
 		return i;
 	}
 
+	public static int IntToMax(int num)
+	{
+		return intervals[num].Item2;
+	}
+
+	public static int IntToMin(int num)
+	{
+		return intervals[num].Item1;
+	}
 	public static Boolean Next(StringBuilder s)
 	{
 		switch (s[s.Length - 1])
