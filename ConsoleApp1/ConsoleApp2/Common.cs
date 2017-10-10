@@ -44,7 +44,7 @@ namespace metaheuristic
 			Boolean success = true;
 			int min = Math.Min(s1.Length, s2.Length);
 			int start = Math.Max(s1.Length - s2.Length, 0);
-			for (int i = start; i < s1.Length; i++)
+			for (int i = start + 1; i < s1.Length; i++)
 			{
 				success = true;
 				for (int j = 0; j < s1.Length - i; j++)

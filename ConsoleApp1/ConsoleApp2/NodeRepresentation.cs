@@ -47,11 +47,11 @@ namespace metaheuristic
 			return temp;
 		}
 
-		public NodeRepresentation CrossOver(NodeRepresentation node2)
+		public NodeRepresentation CrossOver(NodeRepresentation node2, double size = 0.5)
 		{
 			List<int> newCode = new List<int>();
 			int index = 0;
-			int amount = random.Next(1, node2.code.Count / 2);
+			int amount = random.Next(1, (int)(node2.code.Count * size));
 			List<int> temp = node2.code;
 			bool cont = true;
 			while(cont)

@@ -40,6 +40,8 @@ namespace metaheuristic
 			//minNode = graph.Interval.Sum();
 			//
 			int actual = graph.Keys.FindIndex(s => s == firstOligo);
+			if (actual == -1)
+				actual = random.Next(0, graph.Keys.Count);
 			Add(actual);
 			var nextNodes = graph.GetNext(actual);
 			

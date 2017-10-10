@@ -6,14 +6,18 @@ using System.Text;
 
 namespace metaheuristic
 {
-    class NewMeta
-    {
+	class NewMeta
+	{
 		private static Random random = new Random();
 		public ISBHInstance isbh = new ISBHInstance();
 		string orginalDNA;
 		string first;
 		int length;
 
+		public int MutationAmount {get; set;}
+		public double CrossOverSize { get; set; }
+		public double CrossOverPercent { get; set; }
+		public double MutationPercent { get; set; }
 		public Generator generator { get; }
 		public GraphRepresentation graph { get; }
 		int temperature;
@@ -21,23 +25,25 @@ namespace metaheuristic
 		public SortedDictionary<string, int> SpectrumLong;
 		SortedDictionary<string, int> SpectrumShort;
 
-		public NewMeta(int length, int temp)
+		public NewMeta(int length, int temp, int errors = 3)
 		{
-			Generate(length, temp);
+			Generate(length, temp, errors);
 			generator = new Generator(SpectrumLong, length, first, temp);
 			graph = generator.graph;
+			CrossOverSize = 0.5;
+			MutationAmount = length / 10;
 		}
-		private void Generate(int length, int temp)
+		private void Generate(int length, int temp, int errors = 3)
 		{
 			this.temperature = temp;
 			this.length = length;
 			isbh.BuildComplDNAInterval(length, temp);
-			isbh.GenerateNegativeErrorInterval(3);
+			isbh.GenerateNegativeErrorInterval(errors);
 			orginalDNA = isbh.DNACode;
 			first = isbh.first;
 			SpectrumLong = isbh.SpectrumInterval;
 			isbh.BuildComplDNAInterval(length, temp - 2, true);
-			isbh.GenerateNegativeErrorInterval(3);
+			isbh.GenerateNegativeErrorInterval(errors);
 			if (first == "")
 				first = CommonDNAOperations.Complementary(isbh.first);
 			SpectrumShort = isbh.SpectrumInterval;
@@ -59,7 +65,7 @@ namespace metaheuristic
 			foreach (var dna in population)
 			{
 				if (random.NextDouble() < percent)
-					list.Add(dna.Mutate(length / 10));
+					list.Add(dna.Mutate(MutationAmount));
 			}
 			population.AddRange(list);
 		}
@@ -71,7 +77,7 @@ namespace metaheuristic
 			{
 				if (random.NextDouble() < percent)
 				{
-					list.Add(dna.CrossOver(population[random.Next(0, population.Count)]));
+					list.Add(dna.CrossOver(population[random.Next(0, population.Count)], CrossOverSize));
 				}
 			}
 			population.AddRange(list);
@@ -81,7 +87,7 @@ namespace metaheuristic
 		{
 			int[] array = new int[4];
 			List<NodeRepresentation> newPop = new List<NodeRepresentation>();
-			if (population.Count <= 100)
+			if (population.Count <= 400)
 				return;
 			Shuffle(population);
 			for (int i = 0; i < population.Count; i += 4)
