@@ -43,10 +43,11 @@ namespace metaheuristic
 		{
 			Boolean success = true;
 			int min = Math.Min(s1.Length, s2.Length);
-			for (int i = 0; i < min; i++)
+			int start = Math.Max(s1.Length - s2.Length, 0);
+			for (int i = start; i < s1.Length; i++)
 			{
 				success = true;
-				for (int j = 0; j < min - i; j++)
+				for (int j = 0; j < s1.Length - i; j++)
 				{
 					if (s1[j + i] != s2[j])
 					{

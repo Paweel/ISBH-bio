@@ -8,7 +8,8 @@ namespace metaheuristic
 {
     class Generator
     {
-		GraphRepresentation graph;
+
+		public GraphRepresentation graph { get; }
 		//actual visit count
 		int[] nodes;
 		int size;
@@ -20,24 +21,25 @@ namespace metaheuristic
 
 		public Generator(SortedDictionary<string, int> spectrumInterval, int dnaSize, string firstOligo)
 		{
-			size = spectrumInterval.Count;
+			
 			graph = new GraphRepresentation(spectrumInterval);
+			size = graph.size;
 			nodes = new int[size];
 			this.dnaSize = dnaSize;
-			minNode = graph.Interval.Sum();
+			//minNode = graph.Interval.Sum();
 			this.firstOligo = firstOligo;
 		}
 
 		//answers as nodes list
-		public List<int> Generate()
+		public List<int> Generate(double percentSize = 1)
 		{
 
 			//clear
 			result = new List<int>();
 			nodes = new int[size];
-			minNode = graph.Interval.Sum();
+			//minNode = graph.Interval.Sum();
 			//
-			int actual = graph.keys.FindIndex(s => s == firstOligo);
+			int actual = graph.Keys.FindIndex(s => s == firstOligo);
 			Add(actual);
 			var nextNodes = graph.GetNext(actual);
 			
@@ -45,17 +47,22 @@ namespace metaheuristic
 			int choosen = random.Next(0, Math.Min(5, listSize));
 			int first = choosen;
 
-			while (result.Count < dnaSize * 1.2)
+			while (NodeRepresentation.CodeLength(graph, result) < dnaSize * percentSize)
 			{
-				Tuple<int, int, int> nextNode = nextNodes[choosen];
-				if (nodes[nextNode.Item1] + 1 > IntToMax(nextNode.Item3))
+				Tuple<int, int, LookupRow> nextNode = nextNodes[choosen];
+				if (nodes[nextNode.Item1] + 1 > nextNode.Item3.max)
 				{
 					choosen = (choosen + 1) % listSize;
 					//if (first == choosen) 
 						//revert
 					continue;
 				}
-				
+				if (nextNode.Item1 == actual)
+				{
+					//cannot went to same node
+					choosen = (choosen + 1) % listSize;
+					continue;
+				}
 				actual = nextNode.Item1;
 				Add(actual);
 				nextNodes = graph.GetNext(actual);
@@ -69,15 +76,16 @@ namespace metaheuristic
 		private void Add(int node)
 		{
 			nodes[node]++;
+			nodes[graph.Interval[node].complementary]++;
 			result.Add(node);
 		}
 
 		public DNA ToDna(List<int> list)
 		{
-			StringBuilder code = new StringBuilder(graph.keys[list[0]]);
+			StringBuilder code = new StringBuilder(graph.Keys[list[0]]);
 			for(int i = 1; i < list.Count; i++)
 			{
-				Common.Merge(code, graph.keys[list[i]]);
+				Common.Merge(code, graph.Keys[list[i]]);
 			}
 			return new DNA(code);
 		}
