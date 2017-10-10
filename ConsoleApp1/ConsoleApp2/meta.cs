@@ -36,7 +36,7 @@ namespace metaheuristic
 
 		public List<DNA> GenPop(int amount)
 		{
-			Generator generator = new Generator(SpectrumLong, length, first);
+			Generator generator = new Generator(SpectrumLong, length, first, temperature);
 			population = new List<DNA>();
 			for (int i = 0; i < amount; i++)
 			{

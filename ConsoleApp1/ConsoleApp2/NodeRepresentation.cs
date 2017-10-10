@@ -47,6 +47,35 @@ namespace metaheuristic
 			return temp;
 		}
 
+		public NodeRepresentation CrossOver(NodeRepresentation node2)
+		{
+			List<int> newCode = new List<int>();
+			int index = 0;
+			int amount = random.Next(1, node2.code.Count / 2);
+			List<int> temp = node2.code;
+			bool cont = true;
+			while(cont)
+			{
+				if (index + amount > temp.Count)
+				{
+					amount = temp.Count - index;
+					if (amount < 1)
+						break;
+					cont = false;
+				}
+					
+				newCode.InsertRange(index, temp.GetRange(index, amount));
+				index += amount;
+				amount = random.Next(1, temp.Count / 2);
+				if (temp == node2.code)
+					temp = code;
+				else
+					temp = node2.code;
+			}
+
+			return new NodeRepresentation(newCode, graph);
+		}
+
 		private int CodeLength()
 		{
 			return CodeLength(graph, code);
@@ -68,6 +97,15 @@ namespace metaheuristic
 			{
 				//count quantity of each node
 				eval[i]++;
+			}
+
+			for(int i = 0; i < code.Count - 1; i++)
+			{
+				points += graph.HiddenNodesArray[code[i], code[i + 1]].penalty;
+				foreach(var v in graph.HiddenNodesArray[code[i], code[i + 1]].nodes)
+				{
+					eval[v]++;
+				}
 			}
 
 			for(int i = 0; i < eval.Length; i++)

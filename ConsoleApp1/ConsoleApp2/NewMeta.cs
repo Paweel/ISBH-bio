@@ -24,8 +24,8 @@ namespace metaheuristic
 		public NewMeta(int length, int temp)
 		{
 			Generate(length, temp);
-			generator = new Generator(SpectrumLong, length, first);
-			graph = new GraphRepresentation(generator.graph);
+			generator = new Generator(SpectrumLong, length, first, temp);
+			graph = generator.graph;
 		}
 		private void Generate(int length, int temp)
 		{
@@ -60,6 +60,19 @@ namespace metaheuristic
 			{
 				if (random.NextDouble() < percent)
 					list.Add(dna.Mutate(length / 10));
+			}
+			population.AddRange(list);
+		}
+
+		public void CrossOver(double percent)
+		{
+			List<NodeRepresentation> list = new List<NodeRepresentation>();
+			foreach (var dna in population)
+			{
+				if (random.NextDouble() < percent)
+				{
+					list.Add(dna.CrossOver(population[random.Next(0, population.Count)]));
+				}
 			}
 			population.AddRange(list);
 		}

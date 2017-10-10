@@ -19,10 +19,10 @@ namespace metaheuristic
 		string firstOligo;
 		static Random random = new Random();
 
-		public Generator(SortedDictionary<string, int> spectrumInterval, int dnaSize, string firstOligo)
+		public Generator(SortedDictionary<string, int> spectrumInterval, int dnaSize, string firstOligo, int temp)
 		{
 			
-			graph = new GraphRepresentation(spectrumInterval);
+			graph = new GraphRepresentation(spectrumInterval, temp);
 			size = graph.size;
 			nodes = new int[size];
 			this.dnaSize = dnaSize;

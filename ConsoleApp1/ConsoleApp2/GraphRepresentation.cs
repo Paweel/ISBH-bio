@@ -11,6 +11,7 @@ namespace metaheuristic
 		public int[,] graph { get; }
 		// complementary min max
 		public List<LookupRow> Interval { get; }
+		public HiddenNodes[,] HiddenNodesArray { get; set; }
 		SortedDictionary<string, int> spectrumInterval;
 		public int size { get; }
 		public List<string> Keys { get; }
@@ -22,10 +23,11 @@ namespace metaheuristic
 			spectrumInterval = graph.spectrumInterval;
 			size = graph.size;
 			Keys = graph.Keys;
+			HiddenNodesArray = graph.HiddenNodesArray;
 
 		}
 
-		public GraphRepresentation(SortedDictionary<string, int> spectrumInterval)
+		public GraphRepresentation(SortedDictionary<string, int> spectrumInterval, int temperature)
 		{
 			size = spectrumInterval.Count;
 
@@ -72,7 +74,35 @@ namespace metaheuristic
 					graph[i, j] = Overlap(Keys[i], Keys[j]);
 				}
 			}
+
+			HiddenNodes(temperature);
 		}
+
+		public void HiddenNodes(int temperature)
+		{
+			HiddenNodesArray = new HiddenNodes[size, size];
+
+			for (int i = 0; i < size; i++)
+			{
+				for (int j = 0; j < size; j++)
+				{
+					HiddenNodes node = new HiddenNodes();
+					StringBuilder temp = new StringBuilder(Keys[i]);
+					Common.Merge(temp, Keys[j]);
+					var spectrum = CommonDNAOperations.GenerateSpectrum(temp.ToString(), temperature);
+					foreach(var v in spectrum)
+					{
+						int index = Keys.FindIndex(s => s == v.Key);
+						if (index == -1)
+							node.penalty++;
+						else
+							node.nodes.Add(index);
+					}
+					HiddenNodesArray[i, j] = node;
+				}
+			}
+		}
+
 		/*
 		 * return node, value, interval tuple
 		 */

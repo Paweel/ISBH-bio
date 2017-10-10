@@ -11,15 +11,15 @@ namespace metaheuristic
 		
 		static void Main(string[] args)
         {
-			
-			NewMeta metaheuristic = new NewMeta(80, 32);
+			int length = 120;
+			NewMeta metaheuristic = new NewMeta(length, 32);
 			Console.WriteLine("aaaa");
-			var list = metaheuristic.GenPop(400);
+			var list = metaheuristic.GenPop(800);
 
-			for(int i = 0; i < 20000; i++)
+			for(int i = 0; i < 2000; i++)
 			{
-				metaheuristic.Mutate(1.0);
-				//metaheuristic.CrossOver(0.7);
+				metaheuristic.Mutate(0.2);
+				metaheuristic.CrossOver(0.7);
 				metaheuristic.Contest();
 				Console.WriteLine(i);
 			}
@@ -27,7 +27,7 @@ namespace metaheuristic
 			Console.WriteLine(metaheuristic.isbh.DNACode);
 			Console.WriteLine("");
 			Console.WriteLine(best.ToDna(metaheuristic.graph).code.ToString());
-			Console.WriteLine(best.Evaluate(metaheuristic.graph, 80).ToString());
+			Console.WriteLine(best.Evaluate(metaheuristic.graph, length).ToString());
 			Console.ReadKey();
 		}
 
