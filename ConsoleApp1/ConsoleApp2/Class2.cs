@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Diagnostics;
 using System.Linq;
+using System.IO;
+using CsvHelper;
 
 namespace metaheuristic
 {
@@ -10,34 +12,50 @@ namespace metaheuristic
     {
 		public static void Test()
 		{
+			TextWriter SWfile = new StreamWriter("result.csv");
+			var SWcsv = new CsvWriter(SWfile);
 			List<TimeSpan> listSW = new List<TimeSpan>();
-			List<int> listSWI = new List<int>();
-			for (int i = 0; i < 100; i++)
+			List<double> listSWI = new List<double>();
+			for (int count = 100; count <= 300; count += 50)
 			{
-				Tuple<TimeSpan, int> SW = TestRun(100, 20, 400);
-				listSW.Add(SW.Item1);
-				listSWI.Add(SW.Item2);
-				Console.WriteLine("Time = {0} Best = {1}", SW.Item1, SW.Item2);
+				for (int errors = 2; errors <= 6; errors+=2)
+				{
+					for (int i = 0; i < 20; i++)
+					{
+						Tuple<TimeSpan, double> SW = TestRun(count, (int)((errors*0.05)*count), 400);
+						listSW.Add(SW.Item1);
+						listSWI.Add(SW.Item2);
+					}
+					double doubleAverageTicks = listSW.Average(timeSpan => timeSpan.Ticks);
+					long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
+					TimeSpan SWw = new TimeSpan(longAverageTicks);
+					Console.WriteLine("Avg. Time = {0}", SWw);
+					Console.WriteLine("Avg. Best = {0}", listSWI.Average());
+					Console.WriteLine("Count = {0}", count);
+					Console.WriteLine("Errors = {0}", errors * 0.05);
+					Tuple<TimeSpan, double, int, double> SWtuple = new Tuple<TimeSpan, double, int, double>(SWw, listSWI.Average(), count, (errors*0.05));
+					SWcsv.WriteRecord(SWtuple);
+					SWcsv.NextRecord();
+					//SWcsv.Flush();
+					listSW.Clear();
+					listSWI.Clear();
+				}
 			}
-			double doubleAverageTicks = listSW.Average(timeSpan => timeSpan.Ticks);
-			long longAverageTicks = Convert.ToInt64(doubleAverageTicks);
-			TimeSpan SWw = new TimeSpan(longAverageTicks);
-			Console.WriteLine("Avg. Time = {0}", SWw);
-			Console.WriteLine("Avg. Best = {0}", listSWI.Average());
-			Console.ReadKey();
+			SWfile.Flush();
+			SWfile.Close();
 		}
 
-		static Tuple<TimeSpan, int> TestRun(int length = 100, int errors = 3, int pop = 100, int iterations = 2000)
+		static Tuple<TimeSpan, double> TestRun(int length = 100, int errors = 3, int pop = 100, int iterations = 2000)
 		{
 			Stopwatch sw = new Stopwatch();
-			int result = -1;
+			double result = -1;
 			sw.Start();
 			result = TestMeta(length, errors, pop, iterations);
 			sw.Stop();
-			return new Tuple<TimeSpan, int>(sw.Elapsed, result);
+			return new Tuple<TimeSpan, double>(sw.Elapsed, result);
 		}
 
-		static int TestMeta(int length = 100, int errors = 3, int pop = 800, int iterations = 2000)
+		static double TestMeta(int length = 100, int errors = 3, int pop = 800, int iterations = 2000)
 		{
 			NewMeta metaheuristic = new NewMeta(length, 32, errors);
 			//Console.WriteLine("xD");
@@ -87,7 +105,9 @@ namespace metaheuristic
 			//Console.WriteLine(best.Evaluate(metaheuristic.graph, length).ToString());
 			//Console.WriteLine(LevenshteinDistance.Compute(best.ToDna(metaheuristic.graph).code.ToString(), metaheuristic.isbh.DNACode));
 			//Console.WriteLine(LevenshteinDistance.Compute(CommonDNAOperations.Complementary(best.ToDna(metaheuristic.graph).code.ToString()), metaheuristic.isbh.DNACode));
-			return LevenshteinDistance.Compute(CommonDNAOperations.Complementary(best.ToDna(metaheuristic.graph).code.ToString()), metaheuristic.isbh.DNACode);
+			SimMetricsMetricUtilities.SmithWatermanGotoh xd = new SimMetricsMetricUtilities.SmithWatermanGotoh();
+			return xd.GetSimilarity(CommonDNAOperations.Complementary(best.ToDna(metaheuristic.graph).code.ToString()), metaheuristic.isbh.DNACode);
+			//return LevenshteinDistance.Compute(CommonDNAOperations.Complementary(best.ToDna(metaheuristic.graph).code.ToString()), metaheuristic.isbh.DNACode);
 		}
     }
 }

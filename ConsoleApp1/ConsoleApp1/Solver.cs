@@ -34,17 +34,17 @@ namespace Solver
 		private int minOligoToAddL = 0;
 		ISBHInstance isbh = new ISBHInstance();
 
-        public void generate(int length, int temp)
+        public void generate(int length, int temp, int errors)
         {
             higherT = temp;
             this.givenDNALength = length;
             isbh.BuildComplDNAInterval(length, temp);
-			isbh.GenerateNegativeErrorInterval(13);
+			isbh.GenerateNegativeErrorInterval(errors);
 			orginalDNA = isbh.DNACode;
             first = isbh.first;
             SpectrumLong = isbh.SpectrumInterval;
             isbh.BuildComplDNAInterval(length, temp - 2, true);
-			isbh.GenerateNegativeErrorInterval(13);
+			isbh.GenerateNegativeErrorInterval(errors);
 			if (first == "")
 				first = Complementary(isbh.first);
             SpectrumShort = isbh.SpectrumInterval;
@@ -90,9 +90,9 @@ namespace Solver
 				}
 				dnaResult.Append(nucleo[0]);
 			}
-            Console.WriteLine("match: " + bagOfResults.Contains(orginalDNA));
-			Console.WriteLine("first:    " + first);
-			Console.WriteLine("original: " + orginalDNA);
+            //Console.WriteLine("match: " + bagOfResults.Contains(orginalDNA));
+			//Console.WriteLine("first:    " + first);
+			//Console.WriteLine("original: " + orginalDNA);
 			return dnaResult.ToString();
         }
 
