@@ -28,7 +28,9 @@ namespace metaheuristic
 			Console.WriteLine("");
 			Console.WriteLine(best.ToDna(metaheuristic.graph).code.ToString());
 			Console.WriteLine(best.Evaluate(metaheuristic.graph, length).ToString());
-			Console.ReadKey();
+            Console.WriteLine(LevenshteinDistance.Compute(best.ToDna(metaheuristic.graph).code.ToString(), metaheuristic.isbh.DNACode));
+            Console.WriteLine(LevenshteinDistance.Compute(CommonDNAOperations.Complementary(best.ToDna(metaheuristic.graph).code.ToString()), metaheuristic.isbh.DNACode));
+            Console.ReadKey();
 		}
 
 	}
